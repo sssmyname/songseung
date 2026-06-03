@@ -157,23 +157,18 @@ with st.sidebar:
         st.error("폴더에 음악 파일이 없습니다.")
         selected_music = None
     else:
-        if "track_index" not in st.session_state:
-            st.session_state.track_index = 0
-
-        def update_track():
-            st.session_state.track_index = music_files.index(st.session_state.track_selector)
+        if "track_selector" not in st.session_state:
+            st.session_state.track_selector = music_files[0]
 
         def next_track():
-            if st.session_state.track_index < len(music_files) - 1:
-                st.session_state.track_index += 1
-            else:
-                st.session_state.track_index = 0
+            current_idx = music_files.index(st.session_state.track_selector)
+            next_idx = (current_idx + 1) % len(music_files)
+            st.session_state.track_selector = music_files[next_idx]
 
         def prev_track():
-            if st.session_state.track_index > 0:
-                st.session_state.track_index -= 1
-            else:
-                st.session_state.track_index = len(music_files) - 1
+            current_idx = music_files.index(st.session_state.track_selector)
+            prev_idx = (current_idx - 1) % len(music_files)
+            st.session_state.track_selector = music_files[prev_idx]
 
         col_prev, col_next = st.columns(2)
         with col_prev:
@@ -181,7 +176,7 @@ with st.sidebar:
         with col_next:
             st.button("다음 곡 ▶", on_click=next_track, use_container_width=True)
 
-        selected_music = st.selectbox("스트리밍할 트랙 선택", music_files, index=st.session_state.track_index, key="track_selector", on_change=update_track, label_visibility="collapsed")
+        selected_music = st.selectbox("스트리밍할 트랙 선택", music_files, key="track_selector", label_visibility="collapsed")
 
 if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
