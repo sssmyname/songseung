@@ -266,9 +266,15 @@ with st.sidebar:
     st.markdown("<h2 style='color:#00E676 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
     st.divider()
     
-    if os.path.exists("ㄸㄷ_2.jpg"):
+    profile_target = None
+    for p_file in ["캡처.jpg", "ㄸㄷ_2.jpg"]:
+        if os.path.exists(p_file):
+            profile_target = p_file
+            break
+            
+    if profile_target:
         try:
-            with open("ㄸㄷ_2.jpg", "rb") as img_file:
+            with open(profile_target, "rb") as img_file:
                 sb_b64 = base64.b64encode(img_file.read()).decode()
                 st.markdown(f'<div class="sidebar-img-fixed"><img src="data:image/jpeg;base64,{sb_b64}"></div>', unsafe_allow_html=True)
         except Exception:
@@ -335,9 +341,9 @@ if selected_music:
     profile_b64 = base64.b64encode(profile_svg.encode('utf-8')).decode('utf-8')
     profile_img_src = f"data:image/svg+xml;base64,{profile_b64}"
     
-    if os.path.exists("ㄸㄷ_2.jpg"):
+    if profile_target:
         try:
-            with open("ㄸㄷ_2.jpg", "rb") as img_file:
+            with open(profile_target, "rb") as img_file:
                 b64_str = base64.b64encode(img_file.read()).decode()
                 profile_img_src = f"data:image/jpeg;base64,{b64_str}"
         except Exception:
@@ -361,7 +367,7 @@ if selected_music:
         
         current_index = music_files.index(selected_music) if selected_music in music_files else 0
         
-        cover_files = [f for f in os.listdir('.') if f.lower().endswith(('.gif', '.png', '.jpg', '.jpeg', '.webp')) and f != "ㄸㄷ_2.jpg"]
+        cover_files = [f for f in os.listdir('.') if f.lower().endswith(('.gif', '.png', '.jpg', '.jpeg', '.webp')) and f not in ["캡처.jpg", "ㄸㄷ_2.jpg"]]
         
         fallback_svg = '<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#121614"/><text x="50%" y="50%" font-family="sans-serif" font-size="24" fill="#00E676" text-anchor="middle" dominant-baseline="middle">사진 폴더에 사진이나 GIF 움짤을 넣어주세요!</text></svg>'
         fb_b64 = base64.b64encode(fallback_svg.encode('utf-8')).decode('utf-8')
@@ -377,8 +383,32 @@ if selected_music:
                 assigned_cover = f"data:image/{c_mime};base64,{c_b64}"
             except Exception:
                 pass
+        else:
+            backup_images = [
+                "https://media.tenor.com/m8ZWcv-v96QAAAAC/dance-moves.gif",
+                "https://media.tenor.com/y1vKIfbZ46gAAAAC/anime-dance.gif",
+                "https://media.tenor.com/2Uee-E8E42IAAAAC/naruto-sasuke.gif",
+                "https://media.tenor.com/8Qz_W4qU13UAAAAC/cat-jam.gif",
+                "https://media.tenor.com/GfJTqO2Xl4QAAAAC/meme-dog.gif",
+                "https://media.tenor.com/f2905Kj21aYAAAAC/spongebob-patrick.gif",
+                "https://media.tenor.com/pZqN-H00fPMAAAAC/funny-laugh.gif",
+                "https://media.tenor.com/8Tf5QzK073AAAAAC/huh-meme.gif",
+                "https://media.tenor.com/tVvw0ZJd_r8AAAAC/monkey-dance.gif",
+                "https://media.tenor.com/XFEtL2w9b78AAAAC/anime-wow.gif",
+                "https://media.tenor.com/d_n49H5e3BIAAAAC/doge-dance.gif",
+                "https://media.tenor.com/B7qjGv2GZ_MAAAAC/pepe-dance.gif",
+                "https://media.tenor.com/Fw5uF70jLh8AAAAC/pika-dance.gif",
+                "https://media.tenor.com/xO4bB1wK-8wAAAAC/shrek-dance.gif",
+                "https://media.tenor.com/I7p20N-J3R8AAAAC/duck-dance.gif",
+                "https://media.tenor.com/H0V167U2Zp8AAAAC/mario-dance.gif",
+                "https://media.tenor.com/7bQ6zZ1OQv0AAAAC/goku-dance.gif",
+                "https://media.tenor.com/H1Gj5P8vK-8AAAAC/cat-vibe.gif",
+                "https://media.tenor.com/p_P_x2_1kAMAAAAC/kermit-dance.gif",
+                "https://media.tenor.com/8V-N-B1_g0AAAAAC/jojo-dance.gif"
+            ]
+            assigned_cover = backup_images[current_index % len(backup_images)]
             
-        st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}"></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}" referrerpolicy="no-referrer"></div>', unsafe_allow_html=True)
         
         st.markdown('<div class="audio-player-wrapper">', unsafe_allow_html=True)
         
