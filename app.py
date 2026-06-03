@@ -101,11 +101,11 @@ st.markdown("""
         object-position: center !important;
     }
     .audio-player-wrapper {
-        background: linear-gradient(90deg, #00E676 0%, #121614 100%) !important;
+        background-color: #0A0A0C !important;
         border: 2px solid #00E676 !important;
-        border-radius: 50px !important;
-        padding: 15px 25px !important;
-        box-shadow: 0px 8px 25px rgba(0, 230, 118, 0.3) !important;
+        border-radius: 40px !important;
+        padding: 10px 15px !important;
+        box-shadow: 0px 5px 20px rgba(0, 230, 118, 0.2) !important;
         margin-top: 15px !important;
         margin-bottom: 25px !important;
         display: flex !important;
@@ -114,28 +114,10 @@ st.markdown("""
     }
     .audio-player-wrapper audio {
         width: 100% !important;
-        height: 55px !important;
-        transform: scale(1.1) !important;
-        transform-origin: center center !important;
-    }
-    audio::-webkit-media-controls-panel {
-        background-color: #F8F9FA !important;
+        height: 45px !important;
         border-radius: 30px !important;
-    }
-    audio::-webkit-media-controls-play-button {
-        transform: scale(1.8) !important;
-        background-color: #00E676 !important;
-        border-radius: 50% !important;
-        margin-right: 15px !important;
-    }
-    audio::-webkit-media-controls-mute-button {
-        transform: scale(1.4) !important;
-    }
-    audio::-webkit-media-controls-current-time-display,
-    audio::-webkit-media-controls-time-remaining-display {
-        font-size: 1.1rem !important;
-        color: #101211 !important;
-        font-weight: bold !important;
+        outline: none !important;
+        filter: invert(0.9) hue-rotate(180deg) grayscale(0.2) !important;
     }
     .sidebar-img-fixed {
         width: 100% !important;
@@ -166,16 +148,11 @@ st.markdown("""
             height: 250px !important;
         }
         .audio-player-wrapper {
-            padding: 12px 15px !important;
+            padding: 8px 12px !important;
             border-radius: 35px !important;
         }
         .audio-player-wrapper audio {
-            transform: scale(1.05) !important;
-            height: 50px !important;
-        }
-        audio::-webkit-media-controls-play-button {
-            transform: scale(1.6) !important;
-            margin-right: 10px !important;
+            height: 40px !important;
         }
         h1 img {
             width: 30px !important;
@@ -383,29 +360,29 @@ if selected_music:
         
         current_index = music_files.index(selected_music) if selected_music in music_files else 0
         
-        cover_files = [f for f in os.listdir('.') if f.lower().endswith(('.gif', '.png', '.jpg', '.jpeg', '.webp')) and f != "ㄸㄷ_2.jpg"]
-        
-        if cover_files:
-            c_file = cover_files[current_index % len(cover_files)]
-            with open(c_file, "rb") as f:
-                c_b64 = base64.b64encode(f.read()).decode()
-            c_ext = c_file.split('.')[-1].lower()
-            c_mime = "jpeg" if c_ext in ['jpg', 'jpeg'] else c_ext
-            assigned_cover = f"data:image/{c_mime};base64,{c_b64}"
-        else:
-            backup_images = [
-                "https://media.tenor.com/m8ZWcv-v96QAAAAC/dance-moves.gif",
-                "https://media.tenor.com/y1vKIfbZ46gAAAAC/anime-dance.gif",
-                "https://media.tenor.com/2Uee-E8E42IAAAAC/naruto-sasuke.gif",
-                "https://media.tenor.com/8Qz_W4qU13UAAAAC/cat-jam.gif",
-                "https://media.tenor.com/GfJTqO2Xl4QAAAAC/meme-dog.gif",
-                "https://media.tenor.com/f2905Kj21aYAAAAC/spongebob-patrick.gif",
-                "https://media.tenor.com/pZqN-H00fPMAAAAC/funny-laugh.gif",
-                "https://media.tenor.com/8Tf5QzK073AAAAAC/huh-meme.gif",
-                "https://media.tenor.com/tVvw0ZJd_r8AAAAC/monkey-dance.gif",
-                "https://media.tenor.com/XFEtL2w9b78AAAAC/anime-wow.gif"
-            ]
-            assigned_cover = backup_images[current_index % len(backup_images)]
+        backup_images = [
+            "https://media.tenor.com/m8ZWcv-v96QAAAAC/dance-moves.gif",
+            "https://media.tenor.com/y1vKIfbZ46gAAAAC/anime-dance.gif",
+            "https://media.tenor.com/2Uee-E8E42IAAAAC/naruto-sasuke.gif",
+            "https://media.tenor.com/8Qz_W4qU13UAAAAC/cat-jam.gif",
+            "https://media.tenor.com/GfJTqO2Xl4QAAAAC/meme-dog.gif",
+            "https://media.tenor.com/f2905Kj21aYAAAAC/spongebob-patrick.gif",
+            "https://media.tenor.com/pZqN-H00fPMAAAAC/funny-laugh.gif",
+            "https://media.tenor.com/8Tf5QzK073AAAAAC/huh-meme.gif",
+            "https://media.tenor.com/tVvw0ZJd_r8AAAAC/monkey-dance.gif",
+            "https://media.tenor.com/XFEtL2w9b78AAAAC/anime-wow.gif",
+            "https://media.tenor.com/d_n49H5e3BIAAAAC/doge-dance.gif",
+            "https://media.tenor.com/B7qjGv2GZ_MAAAAC/pepe-dance.gif",
+            "https://media.tenor.com/Fw5uF70jLh8AAAAC/pika-dance.gif",
+            "https://media.tenor.com/xO4bB1wK-8wAAAAC/shrek-dance.gif",
+            "https://media.tenor.com/I7p20N-J3R8AAAAC/duck-dance.gif",
+            "https://media.tenor.com/H0V167U2Zp8AAAAC/mario-dance.gif",
+            "https://media.tenor.com/7bQ6zZ1OQv0AAAAC/goku-dance.gif",
+            "https://media.tenor.com/H1Gj5P8vK-8AAAAC/cat-vibe.gif",
+            "https://media.tenor.com/p_P_x2_1kAMAAAAC/kermit-dance.gif",
+            "https://media.tenor.com/8V-N-B1_g0AAAAAC/jojo-dance.gif"
+        ]
+        assigned_cover = backup_images[current_index % len(backup_images)]
             
         st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}"></div>', unsafe_allow_html=True)
         
@@ -450,7 +427,7 @@ if selected_music:
         
         if st.button("REVIEW SUBMIT 🚀"):
             if not reviewer_name or not reviewer_pwd:
-                st.warning("닉네임을 입력해야 리뷰를 등록할 수 있습니다!")
+                st.warning("닉네임과 비밀번호를 모두 입력해야 리뷰를 등록할 수 있습니다!")
             else:
                 st.success("트랙 피드백 리포트가 정상적으로 발행되었습니다.")
                 
