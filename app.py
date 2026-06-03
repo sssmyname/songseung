@@ -7,7 +7,7 @@ st.set_page_config(page_title="Playlist - 송승현", page_icon="🎤", layout="
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
     
     .stApp {
         background-color: #0D0D11;
@@ -157,7 +157,31 @@ with st.sidebar:
         st.error("폴더에 음악 파일이 없습니다.")
         selected_music = None
     else:
-        selected_music = st.selectbox("스트리밍할 트랙 선택", music_files, label_visibility="collapsed")
+        if "track_index" not in st.session_state:
+            st.session_state.track_index = 0
+
+        def update_track():
+            st.session_state.track_index = music_files.index(st.session_state.track_selector)
+
+        def next_track():
+            if st.session_state.track_index < len(music_files) - 1:
+                st.session_state.track_index += 1
+            else:
+                st.session_state.track_index = 0
+
+        def prev_track():
+            if st.session_state.track_index > 0:
+                st.session_state.track_index -= 1
+            else:
+                st.session_state.track_index = len(music_files) - 1
+
+        col_prev, col_next = st.columns(2)
+        with col_prev:
+            st.button("◀ 이전 곡", on_click=prev_track, use_container_width=True)
+        with col_next:
+            st.button("다음 곡 ▶", on_click=next_track, use_container_width=True)
+
+        selected_music = st.selectbox("스트리밍할 트랙 선택", music_files, index=st.session_state.track_index, key="track_selector", on_change=update_track, label_visibility="collapsed")
 
 if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
@@ -208,38 +232,44 @@ if selected_music:
         st.markdown('<div class="track-box">', unsafe_allow_html=True)
         st.markdown("<h3 style='margin-top:0; border-bottom:2px solid #FF5500; padding-bottom:10px;'>📊 ⚡ CRITIC STATION</h3>", unsafe_allow_html=True)
         
-        score_melody = st.slider("🎵 Melody (멜로디라인 및 중독성) 🎹", 1, 5, 3)
-        score_rhythm = st.slider("🥁 Rhythm & Beats (드럼 신기감 및 그루브) 🎧", 1, 5, 3)
-        score_origin = st.slider("✨ Originality (곡의 독창성 및 실험성) ⚡", 1, 5, 3)
+        score_melody = st.number_input("🎵 Melody (멜로디라인 및 중독성) 🎹", min_value=1, max_value=5, value=3, step=1)
+        score_rhythm = st.number_input("🥁 Rhythm & Beats (드럼 신기감 및 그루브) 🎧", min_value=1, max_value=5, value=3, step=1)
+        score_origin = st.number_input("✨ Originality (곡의 독창성 및 실험성) ⚡", min_value=1, max_value=5, value=3, step=1)
         
         avg_score = round((score_melody + score_rhythm + score_origin) / 3, 1)
         st.metric("👑 TOTAL RATING SCORE", f"{avg_score} / 5.0")
         
+        reviewer_name = st.text_input("👤 작성자 닉네임:", placeholder="닉네임을 입력해주세요 (예: 힙합마니아)")
         feedback = st.text_area("📝 공개 댓글 (유저 상세설명):", placeholder="비트의 구성, 악기 소스, 전개 방식 등 프로듀싱 피드백을 자유롭게 남겨주세요.")
         
         st.write("")
         
         if st.button("REVIEW SUBMIT 🚀"):
-            st.success("트랙 피드백 리포트가 정상적으로 발행되었습니다.")
-            
-            review_data = {
-                "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                "track": selected_music,
-                "melody": score_melody,
-                "rhythm": score_rhythm,
-                "origin": score_origin,
-                "avg": avg_score,
-                "comment": feedback if feedback else "의견 없음"
-            }
-            save_review(review_data)
-            
-            with st.expander("📄 정식 트랙 분석 리포트 확인"):
-                st.write(f"- **DATE:** {review_data['date']}")
-                st.write(f"- **TRACK:** {review_data['track']}")
-                st.write(f"- **MELODY:** {review_data['melody']} | **RHYTHM:** {review_data['rhythm']} | **ORIGINALITY:** {review_data['origin']}")
-                st.write(f"- **AVERAGE:** {review_data['avg']} / 5.0")
-                st.write(f"- **COMMENT:** {review_data['comment']}")
-            st.balloons()
+            if not reviewer_name:
+                st.warning("닉네임을 입력해야 리뷰를 등록할 수 있습니다!")
+            else:
+                st.success("트랙 피드백 리포트가 정상적으로 발행되었습니다.")
+                
+                review_data = {
+                    "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "track": selected_music,
+                    "nickname": reviewer_name,
+                    "melody": score_melody,
+                    "rhythm": score_rhythm,
+                    "origin": score_origin,
+                    "avg": avg_score,
+                    "comment": feedback if feedback else "의견 없음"
+                }
+                save_review(review_data)
+                
+                with st.expander("📄 정식 트랙 분석 리포트 확인"):
+                    st.write(f"- **DATE:** {review_data['date']}")
+                    st.write(f"- **TRACK:** {review_data['track']}")
+                    st.write(f"- **NICKNAME:** {review_data['nickname']}")
+                    st.write(f"- **MELODY:** {review_data['melody']} | **RHYTHM:** {review_data['rhythm']} | **ORIGINALITY:** {review_data['origin']}")
+                    st.write(f"- **AVERAGE:** {review_data['avg']} / 5.0")
+                    st.write(f"- **COMMENT:** {review_data['comment']}")
+                st.balloons()
         st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("")
@@ -252,7 +282,7 @@ if selected_music:
         for r in reversed(current_reviews):
             st.markdown(f"""
             <div style='background-color:#0D0D11; padding:15px; border-radius:8px; margin-bottom:12px; border-left:4px solid #FF5500; border-top:1px solid #252533; border-right:1px solid #252533; border-bottom:1px solid #252533;'>
-                <p style='margin:0; font-size:12px; color:#888899;'>{r['date']} | <b>트랙: {r['track']}</b></p>
+                <p style='margin:0; font-size:12px; color:#888899;'>{r['date']} | <b>트랙: {r['track']}</b> | <b style='color:#FF5500;'>작성자: {r.get('nickname', '익명')}</b></p>
                 <p style='margin:6px 0; font-weight:bold; color:#FF5500; font-size:15px;'>👑 총점: {r['avg']} / 5.0 <span style='font-size:12px; color:#EEEEEE; font-weight:normal;'>(멜로디:{r['melody']} 리듬:{r['rhythm']} 독창성:{r['origin']})</span></p>
                 <p style='margin:0; color:#EEEEEE; font-size:14px; background-color:#13131A; padding:10px; border-radius:6px;'>{r['comment']}</p>
             </div>
