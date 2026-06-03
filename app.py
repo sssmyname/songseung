@@ -242,7 +242,6 @@ if "shuffled_tracks" not in st.session_state:
     st.session_state.shuffled_tracks = raw_files
 
 music_files = st.session_state.shuffled_tracks
-local_images = [f for f in os.listdir('.') if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))]
 
 if music_files:
     if "track_selector" not in st.session_state:
@@ -264,13 +263,11 @@ with st.sidebar:
     st.markdown("<h2 style='color:#00E676 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
     st.divider()
     
-    if local_images:
+    if os.path.exists("ㄸㄷ_2.jpg"):
         try:
-            with open(local_images[0], "rb") as img_file:
+            with open("ㄸㄷ_2.jpg", "rb") as img_file:
                 sb_b64 = base64.b64encode(img_file.read()).decode()
-                sb_ext = local_images[0].split('.')[-1].lower()
-                sb_mime = "jpeg" if sb_ext in ['jpg', 'jpeg'] else sb_ext
-                st.markdown(f'<div class="sidebar-img-fixed"><img src="data:image/{sb_mime};base64,{sb_b64}" referrerpolicy="no-referrer"></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="sidebar-img-fixed"><img src="data:image/jpeg;base64,{sb_b64}"></div>', unsafe_allow_html=True)
         except Exception:
             pass
         
@@ -317,7 +314,7 @@ with st.sidebar:
         with st.expander("🔐 관리자 로그인"):
             admin_pwd = st.text_input("비밀번호를 입력하세요", type="password")
             if st.button("로그인"):
-                if admin_pwd == "1234":
+                if admin_pwd == "a159s753":
                     st.session_state.is_admin = True
                     st.rerun()
                 else:
@@ -332,19 +329,17 @@ if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
     
     profile_img_src = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100&q=80"
-    if local_images:
+    if os.path.exists("ㄸㄷ_2.jpg"):
         try:
-            with open(local_images[0], "rb") as img_file:
+            with open("ㄸㄷ_2.jpg", "rb") as img_file:
                 b64_str = base64.b64encode(img_file.read()).decode()
-                ext = local_images[0].split('.')[-1].lower()
-                mime = "jpeg" if ext in ['jpg', 'jpeg'] else ext
-                profile_img_src = f"data:image/{mime};base64,{b64_str}"
+                profile_img_src = f"data:image/jpeg;base64,{b64_str}"
         except Exception:
             pass
 
     st.markdown(f"""
     <h1>
-        <img src="{profile_img_src}" referrerpolicy="no-referrer" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #00E676; box-shadow: 0px 0px 8px rgba(0,230,118,0.5);">
+        <img src="{profile_img_src}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #00E676; box-shadow: 0px 0px 8px rgba(0,230,118,0.5);">
         🎤 힙합꿈나무 송승현의 자작곡 평가하기 🎸
     </h1>
     """, unsafe_allow_html=True)
@@ -364,37 +359,27 @@ if selected_music:
         
         if cover_files:
             c_file = cover_files[current_index % len(cover_files)]
-            with open(c_file, "rb") as f:
-                c_b64 = base64.b64encode(f.read()).decode()
-            c_ext = c_file.split('.')[-1].lower()
-            c_mime = "jpeg" if c_ext in ['jpg', 'jpeg'] else c_ext
-            assigned_cover = f"data:image/{c_mime};base64,{c_b64}"
+            try:
+                with open(c_file, "rb") as f:
+                    c_b64 = base64.b64encode(f.read()).decode()
+                c_ext = c_file.split('.')[-1].lower()
+                c_mime = "gif" if c_ext == 'gif' else ("jpeg" if c_ext in ['jpg', 'jpeg'] else c_ext)
+                assigned_cover = f"data:image/{c_mime};base64,{c_b64}"
+            except Exception:
+                assigned_cover = "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=600&q=80"
         else:
             backup_images = [
-                "https://media.tenor.com/m8ZWcv-v96QAAAAC/dance-moves.gif",
-                "https://media.tenor.com/y1vKIfbZ46gAAAAC/anime-dance.gif",
-                "https://media.tenor.com/2Uee-E8E42IAAAAC/naruto-sasuke.gif",
-                "https://media.tenor.com/8Qz_W4qU13UAAAAC/cat-jam.gif",
-                "https://media.tenor.com/GfJTqO2Xl4QAAAAC/meme-dog.gif",
-                "https://media.tenor.com/f2905Kj21aYAAAAC/spongebob-patrick.gif",
-                "https://media.tenor.com/pZqN-H00fPMAAAAC/funny-laugh.gif",
-                "https://media.tenor.com/8Tf5QzK073AAAAAC/huh-meme.gif",
-                "https://media.tenor.com/tVvw0ZJd_r8AAAAC/monkey-dance.gif",
-                "https://media.tenor.com/XFEtL2w9b78AAAAC/anime-wow.gif",
-                "https://media.tenor.com/d_n49H5e3BIAAAAC/doge-dance.gif",
-                "https://media.tenor.com/B7qjGv2GZ_MAAAAC/pepe-dance.gif",
-                "https://media.tenor.com/Fw5uF70jLh8AAAAC/pika-dance.gif",
-                "https://media.tenor.com/xO4bB1wK-8wAAAAC/shrek-dance.gif",
-                "https://media.tenor.com/I7p20N-J3R8AAAAC/duck-dance.gif",
-                "https://media.tenor.com/H0V167U2Zp8AAAAC/mario-dance.gif",
-                "https://media.tenor.com/7bQ6zZ1OQv0AAAAC/goku-dance.gif",
-                "https://media.tenor.com/H1Gj5P8vK-8AAAAC/cat-vibe.gif",
-                "https://media.tenor.com/p_P_x2_1kAMAAAAC/kermit-dance.gif",
-                "https://media.tenor.com/8V-N-B1_g0AAAAAC/jojo-dance.gif"
+                "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=600&q=80",
+                "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&q=80",
+                "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?w=600&q=80",
+                "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80",
+                "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80",
+                "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80",
+                "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80"
             ]
             assigned_cover = backup_images[current_index % len(backup_images)]
             
-        st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}" referrerpolicy="no-referrer"></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}"></div>', unsafe_allow_html=True)
         
         st.markdown('<div class="audio-player-wrapper">', unsafe_allow_html=True)
         
