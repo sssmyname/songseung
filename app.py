@@ -182,6 +182,37 @@ def save_reviews(reviews_list):
         json.dump(reviews_list, f, ensure_ascii=False, indent=4)
 
 current_reviews = load_reviews()
+needs_save = False
+
+for r in current_reviews:
+    if 'id' not in r:
+        r['id'] = str(uuid.uuid4())
+        needs_save = True
+    if 'upvotes' not in r:
+        r['upvotes'] = 0
+        needs_save = True
+    if 'downvotes' not in r:
+        r['downvotes'] = 0
+        needs_save = True
+    if 'replies' not in r:
+        r['replies'] = []
+        needs_save = True
+
+if needs_save:
+    save_reviews(current_reviews)
+
+def handle_vote(review_id, vote_type):
+    reviews = load_reviews()
+    for rev in reviews:
+        if rev.get('id') == review_id:
+            if vote_type == 'up':
+                rev['upvotes'] = rev.get('upvotes', 0) + 1
+            elif vote_type == 'down':
+                rev['downvotes'] = rev.get('downvotes', 0) + 1
+            break
+    save_reviews(reviews)
+    if review_id not in st.session_state.voted_reviews:
+        st.session_state.voted_reviews.append(review_id)
 
 with st.sidebar:
     st.markdown("<h2 style='color:#FF5500 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
@@ -358,15 +389,6 @@ if selected_music:
         st.info("아직 등록된 실시간 피드백이 없습니다. 첫 리뷰를 남겨보세요!")
     else:
         for r in reversed(current_reviews):
-            if 'id' not in r:
-                r['id'] = str(uuid.uuid4())
-            if 'upvotes' not in r:
-                r['upvotes'] = 0
-            if 'downvotes' not in r:
-                r['downvotes'] = 0
-            if 'replies' not in r:
-                r['replies'] = []
-
             img_html = ""
             if r.get("img_b64") and r.get("img_mime"):
                 img_html = f"<img src='data:{r['img_mime']};base64,{r['img_b64']}' style='max-width:100%; border-radius:8px; margin-top:12px; border:1px solid #252533;' />"
@@ -384,17 +406,9 @@ if selected_music:
 
             btn_col1, btn_col2, _ = st.columns([1.5, 1.5, 3])
             with btn_col1:
-                if st.button(f"🟢 👍 추천 {r['upvotes']}", key=f"up_{r['id']}", disabled=has_voted):
-                    r['upvotes'] += 1
-                    st.session_state.voted_reviews.append(r['id'])
-                    save_reviews(current_reviews)
-                    st.rerun()
+                st.button(f"🟢 👍 추천 {r['upvotes']}", key=f"up_{r['id']}", disabled=has_voted, on_click=handle_vote, args=(r['id'], 'up'))
             with btn_col2:
-                if st.button(f"🔴 👎 비추천 {r['downvotes']}", key=f"dn_{r['id']}", disabled=has_voted):
-                    r['downvotes'] += 1
-                    st.session_state.voted_reviews.append(r['id'])
-                    save_reviews(current_reviews)
-                    st.rerun()
+                st.button(f"🔴 👎 비추천 {r['downvotes']}", key=f"dn_{r['id']}", disabled=has_voted, on_click=handle_vote, args=(r['id'], 'down'))
 
             for reply in r['replies']:
                 reply_img_html = ""
