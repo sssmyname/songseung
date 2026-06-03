@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 import base64
 import uuid
+import random
 
 st.set_page_config(page_title="Playlist - 송승현", page_icon="🎤", layout="wide")
 
@@ -12,7 +13,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
     
     .stApp {
-        background-color: #0D0D11;
+        background-color: #0A0A0C;
         color: #EEEEEE;
         font-family: 'Inter', sans-serif;
     }
@@ -21,7 +22,7 @@ st.markdown("""
         font-weight: 700;
         letter-spacing: -1px;
         margin: 0 !important;
-        text-shadow: 0px 0px 12px rgba(255, 85, 0, 0.6);
+        text-shadow: 0px 0px 12px rgba(0, 230, 118, 0.6);
         display: flex;
         align-items: center;
     }
@@ -39,57 +40,57 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     [data-testid="stSidebar"] {
-        background-color: #13131A !important;
-        border-right: 2px solid #FF5500;
+        background-color: #101211 !important;
+        border-right: 2px solid #00E676;
     }
     .stButton>button {
         width: 100%;
         border-radius: 8px;
-        background: linear-gradient(135deg, #FF5500 0%, #FF2200 100%);
-        color: #FFFFFF !important;
+        background: linear-gradient(135deg, #00E676 0%, #00C853 100%);
+        color: #0A0A0C !important;
         font-weight: bold;
         font-size: 16px;
         border: none;
         padding: 12px;
-        box-shadow: 0px 4px 15px rgba(255, 85, 0, 0.4);
+        box-shadow: 0px 4px 15px rgba(0, 230, 118, 0.4);
         transition: all 0.2s ease;
     }
     .stButton>button:hover {
-        background: linear-gradient(135deg, #FF7733 0%, #FF4400 100%);
-        box-shadow: 0px 6px 20px rgba(255, 85, 0, 0.6);
+        background: linear-gradient(135deg, #69F0AE 0%, #00B248 100%);
+        box-shadow: 0px 6px 20px rgba(0, 230, 118, 0.6);
         transform: translateY(-1px);
-        color: #FFFFFF !important;
+        color: #0A0A0C !important;
     }
     [data-testid="stMetricValue"] {
-        color: #FF5500 !important;
+        color: #00E676 !important;
         font-weight: bold;
         font-size: 38px !important;
-        text-shadow: 0px 0px 10px rgba(255, 85, 0, 0.4);
+        text-shadow: 0px 0px 10px rgba(0, 230, 118, 0.4);
     }
     .track-box {
-        border: 1px solid #252533;
+        border: 1px solid #1A221E;
         padding: 25px;
         border-radius: 12px;
-        background-color: #161622;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.5);
+        background-color: #121614;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6);
     }
     .main-banner {
-        background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(13, 13, 17, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&q=80');
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(10, 10, 12, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&q=80');
         background-size: cover;
         background-position: center;
         padding: 35px;
         border-radius: 12px;
-        border: 1px solid #252533;
+        border: 1px solid #1A221E;
         margin-bottom: 25px;
-        box-shadow: 0px 4px 20px rgba(255, 85, 0, 0.2);
+        box-shadow: 0px 4px 20px rgba(0, 230, 118, 0.15);
     }
     .album-art-frame {
         width: 100% !important;
         height: 320px !important;
         overflow: hidden !important;
         border-radius: 12px !important;
-        border: 3px solid #FF5500 !important;
-        box-shadow: 0px 0px 25px rgba(255, 85, 0, 0.6) !important;
+        border: 3px solid #00E676 !important;
+        box-shadow: 0px 0px 25px rgba(0, 230, 118, 0.5) !important;
         background-color: #000000 !important;
         margin-bottom: 20px !important;
     }
@@ -100,11 +101,11 @@ st.markdown("""
         object-position: center !important;
     }
     .audio-player-wrapper {
-        background: linear-gradient(90deg, #FF5500 0%, #161622 100%) !important;
-        border: 2px solid #FF5500 !important;
+        background: linear-gradient(90deg, #00E676 0%, #121614 100%) !important;
+        border: 2px solid #00E676 !important;
         border-radius: 50px !important;
         padding: 15px 25px !important;
-        box-shadow: 0px 8px 25px rgba(255, 85, 0, 0.4) !important;
+        box-shadow: 0px 8px 25px rgba(0, 230, 118, 0.3) !important;
         margin-top: 15px !important;
         margin-bottom: 25px !important;
         display: flex !important;
@@ -118,12 +119,12 @@ st.markdown("""
         transform-origin: center center !important;
     }
     audio::-webkit-media-controls-panel {
-        background-color: #09090D !important;
+        background-color: #F8F9FA !important;
         border-radius: 30px !important;
     }
     audio::-webkit-media-controls-play-button {
         transform: scale(1.8) !important;
-        background-color: #FF5500 !important;
+        background-color: #00E676 !important;
         border-radius: 50% !important;
         margin-right: 15px !important;
     }
@@ -133,7 +134,7 @@ st.markdown("""
     audio::-webkit-media-controls-current-time-display,
     audio::-webkit-media-controls-time-remaining-display {
         font-size: 1.1rem !important;
-        color: #FF5500 !important;
+        color: #101211 !important;
         font-weight: bold !important;
     }
     .sidebar-img-fixed {
@@ -141,7 +142,7 @@ st.markdown("""
         height: 180px !important;
         overflow: hidden !important;
         border-radius: 8px !important;
-        border: 1px solid #252533 !important;
+        border: 1px solid #1A221E !important;
         margin-bottom: 15px !important;
     }
     .sidebar-img-fixed img {
@@ -240,7 +241,12 @@ def handle_vote(review_id, vote_type):
     if review_id not in st.session_state.voted_reviews:
         st.session_state.voted_reviews.append(review_id)
 
-music_files = [f for f in os.listdir('.') if f.endswith(('.mp3', '.wav'))]
+if "shuffled_tracks" not in st.session_state:
+    raw_files = [f for f in os.listdir('.') if f.endswith(('.mp3', '.wav'))]
+    random.shuffle(raw_files)
+    st.session_state.shuffled_tracks = raw_files
+
+music_files = st.session_state.shuffled_tracks
 local_images = [f for f in os.listdir('.') if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))]
 
 if music_files:
@@ -260,7 +266,7 @@ if music_files:
         st.session_state.auto_play = True
 
 with st.sidebar:
-    st.markdown("<h2 style='color:#FF5500 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#00E676 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
     st.divider()
     
     if local_images:
@@ -282,7 +288,7 @@ with st.sidebar:
         selected_music = st.selectbox("스트리밍할 트랙 선택", music_files, key="track_selector", label_visibility="collapsed")
 
     st.write("")
-    st.markdown("<h3 style='margin-bottom:15px; border-bottom:2px solid #FF5500; padding-bottom:5px;'>🏆 REALTIME CHART</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='margin-bottom:15px; border-bottom:2px solid #00E676; padding-bottom:5px;'>🏆 REALTIME CHART</h3>", unsafe_allow_html=True)
     
     track_scores = {}
     for r in current_reviews:
@@ -297,12 +303,12 @@ with st.sidebar:
         
         for idx, item in enumerate(chart_data):
             st.markdown(f"""
-            <div style='background-color:#161622; padding:12px; border-radius:8px; margin-bottom:10px; border-left:4px solid #FF5500; display:flex; justify-content:space-between; align-items:center;'>
+            <div style='background-color:#121614; padding:12px; border-radius:8px; margin-bottom:10px; border-left:4px solid #00E676; display:flex; justify-content:space-between; align-items:center;'>
                 <div>
-                    <span style='color:#FF5500; font-weight:bold; font-size:18px; margin-right:10px;'>{idx+1}위</span>
+                    <span style='color:#00E676; font-weight:bold; font-size:18px; margin-right:10px;'>{idx+1}위</span>
                     <span style='color:#EEEEEE; font-size:14px; font-weight:600;'>{item['track']}</span>
                 </div>
-                <span style='color:#FF5500; font-weight:bold; font-size:16px;'>★ {item['avg']:.1f}</span>
+                <span style='color:#00E676; font-weight:bold; font-size:16px;'>★ {item['avg']:.1f}</span>
             </div>
             """, unsafe_allow_html=True)
     else:
@@ -324,19 +330,19 @@ if selected_music:
 
     st.markdown(f"""
     <h1>
-        <img src="{profile_img_src}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #FF5500; box-shadow: 0px 0px 8px rgba(255,85,0,0.5);">
+        <img src="{profile_img_src}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #00E676; box-shadow: 0px 0px 8px rgba(0,230,118,0.5);">
         🎤 힙합꿈나무 송승현의 자작곡 평가하기 🎸
     </h1>
     """, unsafe_allow_html=True)
     
-    st.markdown("<p style='color:#FF5500; margin:8px 0 0 0; font-size:16px; font-weight:600;'>🎹 BEAT LAB & SOUND STREAMING 🎶</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#00E676; margin:8px 0 0 0; font-size:16px; font-weight:600;'>🎹 BEAT LAB & SOUND STREAMING 🎶</p>", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1.25])
     
     with col1:
         st.markdown('<div class="track-box">', unsafe_allow_html=True)
-        st.markdown(f"<h3 style='margin-top:0; color:#FF5500 !important; font-size:22px;'>🔥 Now Playing: {selected_music}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='margin-top:0; color:#00E676 !important; font-size:22px;'>🔥 Now Playing: {selected_music}</h3>", unsafe_allow_html=True)
         
         backup_images = [
             "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80",
@@ -384,7 +390,7 @@ if selected_music:
         
     with col2:
         st.markdown('<div class="track-box">', unsafe_allow_html=True)
-        st.markdown("<h3 style='margin-top:0; border-bottom:2px solid #FF5500; padding-bottom:10px;'>📊 ⚡ CRITIC STATION</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='margin-top:0; border-bottom:2px solid #00E676; padding-bottom:10px;'>📊 ⚡ CRITIC STATION</h3>", unsafe_allow_html=True)
         
         score_melody = st.number_input("🎵 Melody (멜로디라인 및 중독성) 🎹", min_value=1, max_value=5, value=3, step=1)
         score_rhythm = st.number_input("🥁 Rhythm & Beats (드럼 신기감 및 그루브) 🎧", min_value=1, max_value=5, value=3, step=1)
@@ -436,7 +442,7 @@ if selected_music:
 
     st.write("")
     st.markdown("<div class='track-box'>", unsafe_allow_html=True)
-    st.markdown("<h3 style='margin-top:0; border-bottom:2px solid #FF5500; padding-bottom:10px;'>💬 REALTIME FEEDBACK BOARD</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='margin-top:0; border-bottom:2px solid #00E676; padding-bottom:10px;'>💬 REALTIME FEEDBACK BOARD</h3>", unsafe_allow_html=True)
     
     if not current_reviews:
         st.info("아직 등록된 실시간 피드백이 없습니다. 첫 리뷰를 남겨보세요!")
@@ -444,13 +450,13 @@ if selected_music:
         for r in reversed(current_reviews):
             img_html = ""
             if r.get("img_b64") and r.get("img_mime"):
-                img_html = f"<img src='data:{r['img_mime']};base64,{r['img_b64']}' style='max-width:100%; border-radius:8px; margin-top:12px; border:1px solid #252533;' />"
+                img_html = f"<img src='data:{r['img_mime']};base64,{r['img_b64']}' style='max-width:100%; border-radius:8px; margin-top:12px; border:1px solid #1A221E;' />"
                 
             st.markdown(f"""
-            <div style='background-color:#0D0D11; padding:15px; border-radius:8px; margin-bottom:8px; border-left:4px solid #FF5500; border-top:1px solid #252533; border-right:1px solid #252533; border-bottom:1px solid #252533;'>
-                <p style='margin:0; font-size:12px; color:#888899;'>{r['date']} | <b>트랙: {r['track']}</b> | <b style='color:#FF5500;'>작성자: {r.get('nickname', '익명')}</b></p>
-                <p style='margin:6px 0; font-weight:bold; color:#FF5500; font-size:15px;'>👑 총점: {r['avg']} / 5.0 <span style='font-size:12px; color:#EEEEEE; font-weight:normal;'>(멜로디:{r['melody']} 리듬:{r['rhythm']} 독창성:{r['origin']})</span></p>
-                <p style='margin:0; color:#EEEEEE; font-size:14px; background-color:#13131A; padding:10px; border-radius:6px;'>{r['comment']}</p>
+            <div style='background-color:#0A0A0C; padding:15px; border-radius:8px; margin-bottom:8px; border-left:4px solid #00E676; border-top:1px solid #1A221E; border-right:1px solid #1A221E; border-bottom:1px solid #1A221E;'>
+                <p style='margin:0; font-size:12px; color:#888899;'>{r['date']} | <b>트랙: {r['track']}</b> | <b style='color:#00E676;'>작성자: {r.get('nickname', '익명')}</b></p>
+                <p style='margin:6px 0; font-weight:bold; color:#00E676; font-size:15px;'>👑 총점: {r['avg']} / 5.0 <span style='font-size:12px; color:#EEEEEE; font-weight:normal;'>(멜로디:{r['melody']} 리듬:{r['rhythm']} 독창성:{r['origin']})</span></p>
+                <p style='margin:0; color:#EEEEEE; font-size:14px; background-color:#121614; padding:10px; border-radius:6px;'>{r['comment']}</p>
                 {img_html}
             </div>
             """, unsafe_allow_html=True)
@@ -466,9 +472,9 @@ if selected_music:
             for reply in r['replies']:
                 reply_img_html = ""
                 if reply.get("img_b64") and reply.get("img_mime"):
-                    reply_img_html = f"<img src='data:{reply['img_mime']};base64,{reply['img_b64']}' style='max-width:80%; border-radius:8px; margin-top:8px; border:1px solid #252533;' />"
+                    reply_img_html = f"<img src='data:{reply['img_mime']};base64,{reply['img_b64']}' style='max-width:80%; border-radius:8px; margin-top:8px; border:1px solid #1A221E;' />"
                 st.markdown(f"""
-                <div style='background-color:#13131A; padding:12px; border-radius:8px; margin-left:30px; margin-bottom:8px; border-left:3px solid #555566;'>
+                <div style='background-color:#121614; padding:12px; border-radius:8px; margin-left:30px; margin-bottom:8px; border-left:3px solid #334433;'>
                     <p style='margin:0; font-size:12px; color:#888899;'>↳ {reply['date']} | <b style='color:#AAAAAA;'>작성자: {reply['nickname']}</b></p>
                     <p style='margin:6px 0 0 0; color:#EEEEEE; font-size:13px;'>{reply['comment']}</p>
                     {reply_img_html}
