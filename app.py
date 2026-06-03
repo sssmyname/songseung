@@ -194,6 +194,8 @@ if "voted_reviews" not in st.session_state:
     st.session_state.voted_reviews = []
 if "auto_play" not in st.session_state:
     st.session_state.auto_play = False
+if "is_admin" not in st.session_state:
+    st.session_state.is_admin = False
 
 def load_reviews():
     if os.path.exists(st.session_state.review_file):
@@ -207,6 +209,19 @@ def load_reviews():
 def save_reviews(reviews_list):
     with open(st.session_state.review_file, "w", encoding="utf-8") as f:
         json.dump(reviews_list, f, ensure_ascii=False, indent=4)
+
+def delete_review(review_id):
+    reviews = load_reviews()
+    reviews = [r for r in reviews if r.get('id') != review_id]
+    save_reviews(reviews)
+
+def delete_reply(review_id, reply_id):
+    reviews = load_reviews()
+    for r in reviews:
+        if r.get('id') == review_id:
+            r['replies'] = [rep for rep in r['replies'] if rep.get('id') != reply_id]
+            break
+    save_reviews(reviews)
 
 current_reviews = load_reviews()
 needs_save = False
@@ -313,6 +328,25 @@ with st.sidebar:
             """, unsafe_allow_html=True)
     else:
         st.info("평가 데이터가 없습니다.")
+
+    st.write("")
+    st.write("")
+    st.markdown("<h3 style='margin-bottom:10px; border-bottom:2px solid #555566; padding-bottom:5px; color:#AAAAAA !important;'>⚙️ ADMIN AREA</h3>", unsafe_allow_html=True)
+    
+    if not st.session_state.is_admin:
+        with st.expander("🔐 관리자 로그인"):
+            admin_pwd = st.text_input("비밀번호를 입력하세요", type="password")
+            if st.button("로그인"):
+                if admin_pwd == "a159s753":
+                    st.session_state.is_admin = True
+                    st.rerun()
+                else:
+                    st.error("비밀번호가 일치하지 않습니다.")
+    else:
+        st.success("👑 관리자 모드가 활성화되었습니다.")
+        if st.button("로그아웃"):
+            st.session_state.is_admin = False
+            st.rerun()
 
 if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
@@ -463,16 +497,26 @@ if selected_music:
 
             has_voted = r['id'] in st.session_state.voted_reviews
 
-            btn_col1, btn_col2, _ = st.columns([1.5, 1.5, 3])
+            if st.session_state.is_admin:
+                btn_col1, btn_col2, btn_col3, _ = st.columns([1.5, 1.5, 1.5, 2])
+            else:
+                btn_col1, btn_col2, _ = st.columns([1.5, 1.5, 3])
+
             with btn_col1:
                 st.button(f"🟢 👍 추천 {r['upvotes']}", key=f"up_{r['id']}", disabled=has_voted, on_click=handle_vote, args=(r['id'], 'up'))
             with btn_col2:
                 st.button(f"🔴 👎 비추천 {r['downvotes']}", key=f"dn_{r['id']}", disabled=has_voted, on_click=handle_vote, args=(r['id'], 'down'))
+            if st.session_state.is_admin:
+                with btn_col3:
+                    if st.button("🗑️ 삭제", key=f"del_{r['id']}"):
+                        delete_review(r['id'])
+                        st.rerun()
 
             for reply in r['replies']:
                 reply_img_html = ""
                 if reply.get("img_b64") and reply.get("img_mime"):
                     reply_img_html = f"<img src='data:{reply['img_mime']};base64,{reply['img_b64']}' style='max-width:80%; border-radius:8px; margin-top:8px; border:1px solid #1A221E;' />"
+                
                 st.markdown(f"""
                 <div style='background-color:#121614; padding:12px; border-radius:8px; margin-left:30px; margin-bottom:8px; border-left:3px solid #334433;'>
                     <p style='margin:0; font-size:12px; color:#888899;'>↳ {reply['date']} | <b style='color:#AAAAAA;'>작성자: {reply['nickname']}</b></p>
@@ -480,6 +524,13 @@ if selected_music:
                     {reply_img_html}
                 </div>
                 """, unsafe_allow_html=True)
+                
+                if st.session_state.is_admin:
+                    del_rep_col1, _ = st.columns([1.5, 6])
+                    with del_rep_col1:
+                        if st.button("🗑️ 대댓글 삭제", key=f"del_rep_{reply['id']}"):
+                            delete_reply(r['id'], reply['id'])
+                            st.rerun()
 
             with st.expander("💬 대댓글 달기"):
                 with st.form(key=f"form_{r['id']}"):
