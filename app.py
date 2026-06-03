@@ -381,32 +381,32 @@ if selected_music:
         st.markdown('<div class="track-box">', unsafe_allow_html=True)
         st.markdown(f"<h3 style='margin-top:0; color:#00E676 !important; font-size:22px;'>🔥 Now Playing: {selected_music}</h3>", unsafe_allow_html=True)
         
-        backup_images = [
-            "https://media.giphy.com/media/JRttXEUACydME/giphy.gif",
-            "https://media.giphy.com/media/1n7cOcbh5X1oW0U8Ew/giphy.gif",
-            "https://media.giphy.com/media/3o6wrtp2i5z7GzW3YI/giphy.gif",
-            "https://media.giphy.com/media/tyqcJoNjNv0Fq/giphy.gif",
-            "https://media.giphy.com/media/xT0xeJpnrWC4XWblWQ/giphy.gif",
-            "https://media.giphy.com/media/3kzJvEciJa94SMW3hN/giphy.gif",
-            "https://media.giphy.com/media/geekyQx1aGWeO8bWe2/giphy.gif",
-            "https://media.giphy.com/media/11tTNkNy1SdXGg/giphy.gif",
-            "https://media.giphy.com/media/EZICHGrSD5QEFCxMiC/giphy.gif",
-            "https://media.giphy.com/media/1aFfcTbMqVI52/giphy.gif",
-            "https://media.giphy.com/media/UO5elnTqo4vSg/giphy.gif",
-            "https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif",
-            "https://media.giphy.com/media/kd9BlRovbPOykLBMqX/giphy.gif",
-            "https://media.giphy.com/media/j0eRJzyW7XjMpu1Pqd/giphy.gif",
-            "https://media.giphy.com/media/SKGo6OYe24EBG/giphy.gif",
-            "https://media.giphy.com/media/jpbnoe3UIa8TU8LM13/giphy.gif",
-            "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif",
-            "https://media.giphy.com/media/d3mlE7uhX8KFgEmY/giphy.gif",
-            "https://media.giphy.com/media/26ufcVAp3AiUTIT28/giphy.gif",
-            "https://media.giphy.com/media/yr7n0u3qzO1vG/giphy.gif"
-        ]
-        
         current_index = music_files.index(selected_music) if selected_music in music_files else 0
-        assigned_cover = backup_images[current_index % len(backup_images)]
         
+        cover_files = [f for f in os.listdir('.') if f.lower().endswith(('.gif', '.png', '.jpg', '.jpeg', '.webp')) and f != "ㄸㄷ_2.jpg"]
+        
+        if cover_files:
+            c_file = cover_files[current_index % len(cover_files)]
+            with open(c_file, "rb") as f:
+                c_b64 = base64.b64encode(f.read()).decode()
+            c_ext = c_file.split('.')[-1].lower()
+            c_mime = "jpeg" if c_ext in ['jpg', 'jpeg'] else c_ext
+            assigned_cover = f"data:image/{c_mime};base64,{c_b64}"
+        else:
+            backup_images = [
+                "https://media.tenor.com/m8ZWcv-v96QAAAAC/dance-moves.gif",
+                "https://media.tenor.com/y1vKIfbZ46gAAAAC/anime-dance.gif",
+                "https://media.tenor.com/2Uee-E8E42IAAAAC/naruto-sasuke.gif",
+                "https://media.tenor.com/8Qz_W4qU13UAAAAC/cat-jam.gif",
+                "https://media.tenor.com/GfJTqO2Xl4QAAAAC/meme-dog.gif",
+                "https://media.tenor.com/f2905Kj21aYAAAAC/spongebob-patrick.gif",
+                "https://media.tenor.com/pZqN-H00fPMAAAAC/funny-laugh.gif",
+                "https://media.tenor.com/8Tf5QzK073AAAAAC/huh-meme.gif",
+                "https://media.tenor.com/tVvw0ZJd_r8AAAAC/monkey-dance.gif",
+                "https://media.tenor.com/XFEtL2w9b78AAAAC/anime-wow.gif"
+            ]
+            assigned_cover = backup_images[current_index % len(backup_images)]
+            
         st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}"></div>', unsafe_allow_html=True)
         
         st.markdown('<div class="audio-player-wrapper">', unsafe_allow_html=True)
@@ -450,7 +450,7 @@ if selected_music:
         
         if st.button("REVIEW SUBMIT 🚀"):
             if not reviewer_name or not reviewer_pwd:
-                st.warning("닉네임과 비밀번호를 모두 입력해야 리뷰를 등록할 수 있습니다!")
+                st.warning("닉네임을 입력해야 리뷰를 등록할 수 있습니다!")
             else:
                 st.success("트랙 피드백 리포트가 정상적으로 발행되었습니다.")
                 
