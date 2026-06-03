@@ -1,5 +1,6 @@
-import streamlit as st
+import streamlit st
 import os
+import json
 from datetime import datetime
 
 st.set_page_config(page_title="Playlist - 송승현", page_icon="🎤", layout="wide")
@@ -13,7 +14,7 @@ st.markdown("""
         color: #EEEEEE;
         font-family: 'Inter', sans-serif;
     }
-    h1 {
+    <h1> {
         color: #FFFFFF !important;
         font-weight: 700;
         letter-spacing: -1px;
@@ -124,6 +125,24 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+if "review_file" not in st.session_state:
+    st.session_state.review_file = "reviews.json"
+
+def load_reviews():
+    if os.path.exists(st.session_state.review_file):
+        try:
+            with open(st.session_state.review_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def save_review(new_review):
+    reviews = load_reviews()
+    reviews.append(new_review)
+    with open(st.session_state.review_file, "w", encoding="utf-8") as f:
+        json.dump(reviews, f, ensure_ascii=False, indent=4)
+
 with st.sidebar:
     st.markdown("<h2 style='color:#FF5500 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
     st.divider()
@@ -203,14 +222,41 @@ if selected_music:
         if st.button("REVIEW SUBMIT 🚀"):
             st.success("트랙 피드백 리포트가 정상적으로 발행되었습니다.")
             
+            review_data = {
+                "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "track": selected_music,
+                "melody": score_melody,
+                "rhythm": score_rhythm,
+                "origin": score_origin,
+                "avg": avg_score,
+                "comment": feedback if feedback else "의견 없음"
+            }
+            save_review(review_data)
+            
             with st.expander("📄 정식 트랙 분석 리포트 확인"):
-                st.write(f"- **DATE:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                st.write(f"- **TRACK:** {selected_music}")
-                st.write(f"- **MELODY:** {score_melody} | **RHYTHM:** {score_rhythm} | **ORIGINALITY:** {score_origin}")
-                st.write(f"- **AVERAGE:** {avg_score} / 5.0")
-                if feedback:
-                    st.write(f"- **COMMENT:** {feedback}")
+                st.write(f"- **DATE:** {review_data['date']}")
+                st.write(f"- **TRACK:** {review_data['track']}")
+                st.write(f"- **MELODY:** {review_data['melody']} | **RHYTHM:** {review_data['rhythm']} | **ORIGINALITY:** {review_data['origin']}")
+                st.write(f"- **AVERAGE:** {review_data['avg']} / 5.0")
+                st.write(f"- **COMMENT:** {review_data['comment']}")
             st.balloons()
         st.markdown('</div>', unsafe_allow_html=True)
+
+    st.write("")
+    st.markdown("<div class='track-box'>", unsafe_allow_html=True)
+    st.markdown("<h3 style='margin-top:0; border-bottom:2px solid #FF5500; padding-bottom:10px;'>💬 REALTIME FEEDBACK BOARD</h3>", unsafe_allow_html=True)
+    current_reviews = load_reviews()
+    if not current_reviews:
+        st.info("아직 등록된 실시간 피드백이 없습니다. 첫 리뷰를 남겨보세요!")
+    else:
+        for r in reversed(current_reviews):
+            st.markdown(f"""
+            <div style='background-color:#0D0D11; padding:15px; border-radius:8px; margin-bottom:12px; border-left:4px solid #FF5500; border-top:1px solid #252533; border-right:1px solid #252533; border-bottom:1px solid #252533;'>
+                <p style='margin:0; font-size:12px; color:#888899;'>{r['date']} | <b>트랙: {r['track']}</b></p>
+                <p style='margin:6px 0; font-weight:bold; color:#FF5500; font-size:15px;'>👑 총점: {r['avg']} / 5.0 <span style='font-size:12px; color:#EEEEEE; font-weight:normal;'>(멜로디:{r['melody']} 리듬:{r['rhythm']} 독창성:{r['origin']})</span></p>
+                <p style='margin:0; color:#EEEEEE; font-size:14px; background-color:#13131A; padding:10px; border-radius:6px;'>{r['comment']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.warning("👈 왼쪽 패널에서 음악 파일을 선택하면 플레이어가 활성화됩니다.")
