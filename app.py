@@ -270,7 +270,7 @@ with st.sidebar:
                 sb_b64 = base64.b64encode(img_file.read()).decode()
                 sb_ext = local_images[0].split('.')[-1].lower()
                 sb_mime = "jpeg" if sb_ext in ['jpg', 'jpeg'] else sb_ext
-                st.markdown(f'<div class="sidebar-img-fixed"><img src="data:image/{sb_mime};base64,{sb_b64}"></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="sidebar-img-fixed"><img src="data:image/{sb_mime};base64,{sb_b64}" referrerpolicy="no-referrer"></div>', unsafe_allow_html=True)
         except Exception:
             pass
         
@@ -344,7 +344,7 @@ if selected_music:
 
     st.markdown(f"""
     <h1>
-        <img src="{profile_img_src}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #00E676; box-shadow: 0px 0px 8px rgba(0,230,118,0.5);">
+        <img src="{profile_img_src}" referrerpolicy="no-referrer" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #00E676; box-shadow: 0px 0px 8px rgba(0,230,118,0.5);">
         🎤 힙합꿈나무 송승현의 자작곡 평가하기 🎸
     </h1>
     """, unsafe_allow_html=True)
@@ -360,31 +360,41 @@ if selected_music:
         
         current_index = music_files.index(selected_music) if selected_music in music_files else 0
         
-        backup_images = [
-            "https://media.tenor.com/m8ZWcv-v96QAAAAC/dance-moves.gif",
-            "https://media.tenor.com/y1vKIfbZ46gAAAAC/anime-dance.gif",
-            "https://media.tenor.com/2Uee-E8E42IAAAAC/naruto-sasuke.gif",
-            "https://media.tenor.com/8Qz_W4qU13UAAAAC/cat-jam.gif",
-            "https://media.tenor.com/GfJTqO2Xl4QAAAAC/meme-dog.gif",
-            "https://media.tenor.com/f2905Kj21aYAAAAC/spongebob-patrick.gif",
-            "https://media.tenor.com/pZqN-H00fPMAAAAC/funny-laugh.gif",
-            "https://media.tenor.com/8Tf5QzK073AAAAAC/huh-meme.gif",
-            "https://media.tenor.com/tVvw0ZJd_r8AAAAC/monkey-dance.gif",
-            "https://media.tenor.com/XFEtL2w9b78AAAAC/anime-wow.gif",
-            "https://media.tenor.com/d_n49H5e3BIAAAAC/doge-dance.gif",
-            "https://media.tenor.com/B7qjGv2GZ_MAAAAC/pepe-dance.gif",
-            "https://media.tenor.com/Fw5uF70jLh8AAAAC/pika-dance.gif",
-            "https://media.tenor.com/xO4bB1wK-8wAAAAC/shrek-dance.gif",
-            "https://media.tenor.com/I7p20N-J3R8AAAAC/duck-dance.gif",
-            "https://media.tenor.com/H0V167U2Zp8AAAAC/mario-dance.gif",
-            "https://media.tenor.com/7bQ6zZ1OQv0AAAAC/goku-dance.gif",
-            "https://media.tenor.com/H1Gj5P8vK-8AAAAC/cat-vibe.gif",
-            "https://media.tenor.com/p_P_x2_1kAMAAAAC/kermit-dance.gif",
-            "https://media.tenor.com/8V-N-B1_g0AAAAAC/jojo-dance.gif"
-        ]
-        assigned_cover = backup_images[current_index % len(backup_images)]
+        cover_files = [f for f in os.listdir('.') if f.lower().endswith(('.gif', '.png', '.jpg', '.jpeg', '.webp')) and f != "ㄸㄷ_2.jpg"]
+        
+        if cover_files:
+            c_file = cover_files[current_index % len(cover_files)]
+            with open(c_file, "rb") as f:
+                c_b64 = base64.b64encode(f.read()).decode()
+            c_ext = c_file.split('.')[-1].lower()
+            c_mime = "jpeg" if c_ext in ['jpg', 'jpeg'] else c_ext
+            assigned_cover = f"data:image/{c_mime};base64,{c_b64}"
+        else:
+            backup_images = [
+                "https://media.tenor.com/m8ZWcv-v96QAAAAC/dance-moves.gif",
+                "https://media.tenor.com/y1vKIfbZ46gAAAAC/anime-dance.gif",
+                "https://media.tenor.com/2Uee-E8E42IAAAAC/naruto-sasuke.gif",
+                "https://media.tenor.com/8Qz_W4qU13UAAAAC/cat-jam.gif",
+                "https://media.tenor.com/GfJTqO2Xl4QAAAAC/meme-dog.gif",
+                "https://media.tenor.com/f2905Kj21aYAAAAC/spongebob-patrick.gif",
+                "https://media.tenor.com/pZqN-H00fPMAAAAC/funny-laugh.gif",
+                "https://media.tenor.com/8Tf5QzK073AAAAAC/huh-meme.gif",
+                "https://media.tenor.com/tVvw0ZJd_r8AAAAC/monkey-dance.gif",
+                "https://media.tenor.com/XFEtL2w9b78AAAAC/anime-wow.gif",
+                "https://media.tenor.com/d_n49H5e3BIAAAAC/doge-dance.gif",
+                "https://media.tenor.com/B7qjGv2GZ_MAAAAC/pepe-dance.gif",
+                "https://media.tenor.com/Fw5uF70jLh8AAAAC/pika-dance.gif",
+                "https://media.tenor.com/xO4bB1wK-8wAAAAC/shrek-dance.gif",
+                "https://media.tenor.com/I7p20N-J3R8AAAAC/duck-dance.gif",
+                "https://media.tenor.com/H0V167U2Zp8AAAAC/mario-dance.gif",
+                "https://media.tenor.com/7bQ6zZ1OQv0AAAAC/goku-dance.gif",
+                "https://media.tenor.com/H1Gj5P8vK-8AAAAC/cat-vibe.gif",
+                "https://media.tenor.com/p_P_x2_1kAMAAAAC/kermit-dance.gif",
+                "https://media.tenor.com/8V-N-B1_g0AAAAAC/jojo-dance.gif"
+            ]
+            assigned_cover = backup_images[current_index % len(backup_images)]
             
-        st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}"></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}" referrerpolicy="no-referrer"></div>', unsafe_allow_html=True)
         
         st.markdown('<div class="audio-player-wrapper">', unsafe_allow_html=True)
         
@@ -427,7 +437,7 @@ if selected_music:
         
         if st.button("REVIEW SUBMIT 🚀"):
             if not reviewer_name or not reviewer_pwd:
-                st.warning("닉네임과 비밀번호를 모두 입력해야 리뷰를 등록할 수 있습니다!")
+                st.warning("닉네임을 입력해야 리뷰를 등록할 수 있습니다!")
             else:
                 st.success("트랙 피드백 리포트가 정상적으로 발행되었습니다.")
                 
