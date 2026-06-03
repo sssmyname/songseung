@@ -1,4 +1,4 @@
-import streamlit st
+import streamlit as st
 import os
 import json
 from datetime import datetime
@@ -7,14 +7,14 @@ st.set_page_config(page_title="Playlist - 송승현", page_icon="🎤", layout="
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;700&display=swap');
     
     .stApp {
         background-color: #0D0D11;
         color: #EEEEEE;
         font-family: 'Inter', sans-serif;
     }
-    <h1> {
+    h1 {
         color: #FFFFFF !important;
         font-weight: 700;
         letter-spacing: -1px;
