@@ -215,6 +215,7 @@ def handle_vote(review_id, vote_type):
         st.session_state.voted_reviews.append(review_id)
 
 music_files = [f for f in os.listdir('.') if f.endswith(('.mp3', '.wav'))]
+local_images = [f for f in os.listdir('.') if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))]
 
 if music_files:
     if "track_selector" not in st.session_state:
@@ -234,8 +235,15 @@ with st.sidebar:
     st.markdown("<h2 style='color:#FF5500 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
     st.divider()
     
-    if os.path.exists("ㄸㄷ_2.jpg"):
-        st.markdown('<div class="sidebar-img-fixed"><img src="ㄸㄷ_2.jpg"></div>', unsafe_allow_html=True)
+    if local_images:
+        try:
+            with open(local_images[0], "rb") as img_file:
+                sb_b64 = base64.b64encode(img_file.read()).decode()
+                sb_ext = local_images[0].split('.')[-1].lower()
+                sb_mime = "jpeg" if sb_ext in ['jpg', 'jpeg'] else sb_ext
+                st.markdown(f'<div class="sidebar-img-fixed"><img src="data:image/{sb_mime};base64,{sb_b64}"></div>', unsafe_allow_html=True)
+        except Exception:
+            pass
         
     st.markdown("<h3 style='margin-bottom:5px;'>🎤 MY TRACKLIST</h3>", unsafe_allow_html=True)
     
@@ -276,11 +284,13 @@ if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
     
     profile_img_src = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100&q=80"
-    if os.path.exists("ㄸㄷ_2.jpg"):
+    if local_images:
         try:
-            with open("ㄸㄷ_2.jpg", "rb") as img_file:
+            with open(local_images[0], "rb") as img_file:
                 b64_str = base64.b64encode(img_file.read()).decode()
-                profile_img_src = f"data:image/jpeg;base64,{b64_str}"
+                ext = local_images[0].split('.')[-1].lower()
+                mime = "jpeg" if ext in ['jpg', 'jpeg'] else ext
+                profile_img_src = f"data:image/{mime};base64,{b64_str}"
         except Exception:
             pass
 
