@@ -133,7 +133,7 @@ st.markdown("""
     
     @media (max-width: 768px) {
         h1 {
-            font-size: 1.4rem !important;
+            font-size: 1.2rem !important;
             letter-spacing: -0.5px;
         }
         .main-banner {
@@ -214,6 +214,22 @@ def handle_vote(review_id, vote_type):
     if review_id not in st.session_state.voted_reviews:
         st.session_state.voted_reviews.append(review_id)
 
+music_files = [f for f in os.listdir('.') if f.endswith(('.mp3', '.wav'))]
+
+if music_files:
+    if "track_selector" not in st.session_state:
+        st.session_state.track_selector = music_files[0]
+
+    def next_track():
+        current_idx = music_files.index(st.session_state.track_selector)
+        next_idx = (current_idx + 1) % len(music_files)
+        st.session_state.track_selector = music_files[next_idx]
+
+    def prev_track():
+        current_idx = music_files.index(st.session_state.track_selector)
+        prev_idx = (current_idx - 1) % len(music_files)
+        st.session_state.track_selector = music_files[prev_idx]
+
 with st.sidebar:
     st.markdown("<h2 style='color:#FF5500 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
     st.divider()
@@ -222,31 +238,11 @@ with st.sidebar:
         st.markdown('<div class="sidebar-img-fixed"><img src="ㄸㄷ_2.jpg"></div>', unsafe_allow_html=True)
         
     st.markdown("<h3 style='margin-bottom:5px;'>🎤 MY TRACKLIST</h3>", unsafe_allow_html=True)
-    music_files = [f for f in os.listdir('.') if f.endswith(('.mp3', '.wav'))]
     
     if not music_files:
         st.error("폴더에 음악 파일이 없습니다.")
         selected_music = None
     else:
-        if "track_selector" not in st.session_state:
-            st.session_state.track_selector = music_files[0]
-
-        def next_track():
-            current_idx = music_files.index(st.session_state.track_selector)
-            next_idx = (current_idx + 1) % len(music_files)
-            st.session_state.track_selector = music_files[next_idx]
-
-        def prev_track():
-            current_idx = music_files.index(st.session_state.track_selector)
-            prev_idx = (current_idx - 1) % len(music_files)
-            st.session_state.track_selector = music_files[prev_idx]
-
-        col_prev, col_next = st.columns(2)
-        with col_prev:
-            st.button("◀ 이전 곡", on_click=prev_track, use_container_width=True)
-        with col_next:
-            st.button("다음 곡 ▶", on_click=next_track, use_container_width=True)
-
         selected_music = st.selectbox("스트리밍할 트랙 선택", music_files, key="track_selector", label_visibility="collapsed")
 
     st.write("")
@@ -279,7 +275,15 @@ with st.sidebar:
 if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
     
-    profile_img_src = "ㄸㄷ_2.jpg" if os.path.exists("ㄸㄷ_2.jpg") else "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100&q=80"
+    profile_img_src = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100&q=80"
+    if os.path.exists("ㄸㄷ_2.jpg"):
+        try:
+            with open("ㄸㄷ_2.jpg", "rb") as img_file:
+                b64_str = base64.b64encode(img_file.read()).decode()
+                profile_img_src = f"data:image/jpeg;base64,{b64_str}"
+        except Exception:
+            pass
+
     st.markdown(f"""
     <h1>
         <img src="{profile_img_src}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #FF5500; box-shadow: 0px 0px 8px rgba(255,85,0,0.5);">
@@ -327,6 +331,14 @@ if selected_music:
         st.markdown('<div class="audio-player-wrapper">', unsafe_allow_html=True)
         st.audio(selected_music)
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.write("")
+        btn_c1, btn_c2 = st.columns(2)
+        with btn_c1:
+            st.button("◀ 이전 곡", on_click=prev_track, use_container_width=True, key="main_prev")
+        with btn_c2:
+            st.button("다음 곡 ▶", on_click=next_track, use_container_width=True, key="main_next")
+            
         st.markdown('</div>', unsafe_allow_html=True)
         
     with col2:
