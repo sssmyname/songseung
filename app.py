@@ -239,6 +239,9 @@ for r in current_reviews:
     if 'replies' not in r:
         r['replies'] = []
         needs_save = True
+    if 'password' not in r:
+        r['password'] = ""
+        needs_save = True
 
 if needs_save:
     save_reviews(current_reviews)
@@ -337,7 +340,7 @@ with st.sidebar:
         with st.expander("🔐 관리자 로그인"):
             admin_pwd = st.text_input("비밀번호를 입력하세요", type="password")
             if st.button("로그인"):
-                if admin_pwd == "a159s753":
+                if admin_pwd == "1234":
                     st.session_state.is_admin = True
                     st.rerun()
                 else:
@@ -379,26 +382,26 @@ if selected_music:
         st.markdown(f"<h3 style='margin-top:0; color:#00E676 !important; font-size:22px;'>🔥 Now Playing: {selected_music}</h3>", unsafe_allow_html=True)
         
         backup_images = [
-            "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80",
-            "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80",
-            "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80",
-            "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&q=80",
-            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80",
-            "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=600&q=80",
-            "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=600&q=80",
-            "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600&q=80",
-            "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&q=80",
-            "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80",
-            "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600&q=80",
-            "https://images.unsplash.com/photo-1506157786151-b8491531f063?w=600&q=80",
-            "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80",
-            "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?w=600&q=80",
-            "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&q=80",
-            "https://images.unsplash.com/photo-1484876065684-b683cf17d276?w=600&q=80",
-            "https://images.unsplash.com/photo-1453090927415-5f45085b65c0?w=600&q=80",
-            "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=600&q=80",
-            "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=600&q=80",
-            "https://images.unsplash.com/photo-1513829092322-02d373236fa1?w=600&q=80"
+            "https://media.giphy.com/media/JRttXEUACydME/giphy.gif",
+            "https://media.giphy.com/media/1n7cOcbh5X1oW0U8Ew/giphy.gif",
+            "https://media.giphy.com/media/3o6wrtp2i5z7GzW3YI/giphy.gif",
+            "https://media.giphy.com/media/tyqcJoNjNv0Fq/giphy.gif",
+            "https://media.giphy.com/media/xT0xeJpnrWC4XWblWQ/giphy.gif",
+            "https://media.giphy.com/media/3kzJvEciJa94SMW3hN/giphy.gif",
+            "https://media.giphy.com/media/geekyQx1aGWeO8bWe2/giphy.gif",
+            "https://media.giphy.com/media/11tTNkNy1SdXGg/giphy.gif",
+            "https://media.giphy.com/media/EZICHGrSD5QEFCxMiC/giphy.gif",
+            "https://media.giphy.com/media/1aFfcTbMqVI52/giphy.gif",
+            "https://media.giphy.com/media/UO5elnTqo4vSg/giphy.gif",
+            "https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif",
+            "https://media.giphy.com/media/kd9BlRovbPOykLBMqX/giphy.gif",
+            "https://media.giphy.com/media/j0eRJzyW7XjMpu1Pqd/giphy.gif",
+            "https://media.giphy.com/media/SKGo6OYe24EBG/giphy.gif",
+            "https://media.giphy.com/media/jpbnoe3UIa8TU8LM13/giphy.gif",
+            "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif",
+            "https://media.giphy.com/media/d3mlE7uhX8KFgEmY/giphy.gif",
+            "https://media.giphy.com/media/26ufcVAp3AiUTIT28/giphy.gif",
+            "https://media.giphy.com/media/yr7n0u3qzO1vG/giphy.gif"
         ]
         
         current_index = music_files.index(selected_music) if selected_music in music_files else 0
@@ -433,7 +436,12 @@ if selected_music:
         avg_score = round((score_melody + score_rhythm + score_origin) / 3, 1)
         st.metric("👑 TOTAL RATING SCORE", f"{avg_score} / 5.0")
         
-        reviewer_name = st.text_input("👤 작성자 닉네임:", placeholder="닉네임을 입력해주세요 (예: 힙합마니아)")
+        col_nick, col_pwd = st.columns(2)
+        with col_nick:
+            reviewer_name = st.text_input("👤 작성자 닉네임:", placeholder="예: 힙합마니아")
+        with col_pwd:
+            reviewer_pwd = st.text_input("🔒 비밀번호 (수정/삭제용):", type="password", placeholder="비밀번호 입력")
+            
         feedback = st.text_area("📝 공개 댓글 (유저 상세설명):", placeholder="비트의 구성, 악기 소스, 전개 방식 등 프로듀싱 피드백을 자유롭게 남겨주세요.")
         
         uploaded_img = st.file_uploader("📸 이미지 첨부 (선택사항)", type=["png", "jpg", "jpeg"])
@@ -441,8 +449,8 @@ if selected_music:
         st.write("")
         
         if st.button("REVIEW SUBMIT 🚀"):
-            if not reviewer_name:
-                st.warning("닉네임을 입력해야 리뷰를 등록할 수 있습니다!")
+            if not reviewer_name or not reviewer_pwd:
+                st.warning("닉네임과 비밀번호를 모두 입력해야 리뷰를 등록할 수 있습니다!")
             else:
                 st.success("트랙 피드백 리포트가 정상적으로 발행되었습니다.")
                 
@@ -457,6 +465,7 @@ if selected_music:
                     "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                     "track": selected_music,
                     "nickname": reviewer_name,
+                    "password": reviewer_pwd,
                     "melody": score_melody,
                     "rhythm": score_rhythm,
                     "origin": score_origin,
@@ -506,11 +515,22 @@ if selected_music:
                 st.button(f"🟢 👍 추천 {r['upvotes']}", key=f"up_{r['id']}", disabled=has_voted, on_click=handle_vote, args=(r['id'], 'up'))
             with btn_col2:
                 st.button(f"🔴 👎 비추천 {r['downvotes']}", key=f"dn_{r['id']}", disabled=has_voted, on_click=handle_vote, args=(r['id'], 'down'))
+            
             if st.session_state.is_admin:
                 with btn_col3:
-                    if st.button("🗑️ 삭제", key=f"del_{r['id']}"):
+                    if st.button("🗑️ 강제 삭제", key=f"del_admin_{r['id']}"):
                         delete_review(r['id'])
                         st.rerun()
+
+            if not st.session_state.is_admin:
+                with st.expander("🗑️ 본인 댓글 삭제"):
+                    del_pwd = st.text_input("비밀번호 확인", type="password", key=f"del_pwd_{r['id']}")
+                    if st.button("삭제하기", key=f"del_btn_{r['id']}"):
+                        if del_pwd == r.get('password'):
+                            delete_review(r['id'])
+                            st.rerun()
+                        else:
+                            st.error("비밀번호가 일치하지 않습니다.")
 
             for reply in r['replies']:
                 reply_img_html = ""
@@ -526,21 +546,35 @@ if selected_music:
                 """, unsafe_allow_html=True)
                 
                 if st.session_state.is_admin:
-                    del_rep_col1, _ = st.columns([1.5, 6])
+                    del_rep_col1, _ = st.columns([2.5, 5])
                     with del_rep_col1:
-                        if st.button("🗑️ 대댓글 삭제", key=f"del_rep_{reply['id']}"):
+                        if st.button("🗑️ 대댓글 강제 삭제", key=f"del_rep_admin_{reply['id']}"):
                             delete_reply(r['id'], reply['id'])
                             st.rerun()
+                else:
+                    with st.expander(f"🗑️ 본인 대댓글 삭제 ({reply['nickname']})"):
+                        rep_del_pwd = st.text_input("비밀번호 확인", type="password", key=f"del_rep_pwd_{reply['id']}")
+                        if st.button("삭제하기", key=f"del_rep_btn_{reply['id']}"):
+                            if rep_del_pwd == reply.get('password'):
+                                delete_reply(r['id'], reply['id'])
+                                st.rerun()
+                            else:
+                                st.error("비밀번호가 일치하지 않습니다.")
 
             with st.expander("💬 대댓글 달기"):
                 with st.form(key=f"form_{r['id']}"):
-                    reply_nick = st.text_input("닉네임", key=f"nick_{r['id']}")
+                    col_rn, col_rp = st.columns(2)
+                    with col_rn:
+                        reply_nick = st.text_input("닉네임", key=f"nick_{r['id']}")
+                    with col_rp:
+                        reply_pwd = st.text_input("비밀번호", type="password", key=f"pwd_{r['id']}")
+                        
                     reply_comment = st.text_area("내용", key=f"comm_{r['id']}")
                     reply_img = st.file_uploader("사진 첨부 (선택)", type=["png", "jpg", "jpeg"], key=f"img_{r['id']}")
                     
                     if st.form_submit_button("등록"):
-                        if not reply_nick:
-                            st.warning("닉네임을 입력해주세요!")
+                        if not reply_nick or not reply_pwd:
+                            st.warning("닉네임과 비밀번호를 모두 입력해주세요!")
                         else:
                             r_img_b64 = None
                             r_img_mime = None
@@ -552,6 +586,7 @@ if selected_music:
                                 "id": str(uuid.uuid4()),
                                 "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                 "nickname": reply_nick,
+                                "password": reply_pwd,
                                 "comment": reply_comment if reply_comment else "의견 없음",
                                 "img_b64": r_img_b64,
                                 "img_mime": r_img_mime
