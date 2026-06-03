@@ -100,22 +100,41 @@ st.markdown("""
         object-position: center !important;
     }
     .audio-player-wrapper {
-        background-color: #09090D !important;
-        border: 1px solid #252533 !important;
-        border-radius: 40px !important;
-        padding: 15px 20px !important;
-        box-shadow: inset 0px 2px 5px rgba(0,0,0,0.6) !important;
+        background: linear-gradient(90deg, #FF5500 0%, #161622 100%) !important;
+        border: 2px solid #FF5500 !important;
+        border-radius: 50px !important;
+        padding: 15px 25px !important;
+        box-shadow: 0px 8px 25px rgba(255, 85, 0, 0.4) !important;
         margin-top: 15px !important;
+        margin-bottom: 25px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
     .audio-player-wrapper audio {
         width: 100% !important;
-        height: 45px !important;
-        transform: scale(1.15) !important;
+        height: 55px !important;
+        transform: scale(1.1) !important;
         transform-origin: center center !important;
-        filter: invert(90%) hue-rotate(165deg) saturate(220%) !important;
+    }
+    audio::-webkit-media-controls-panel {
+        background-color: #09090D !important;
+        border-radius: 30px !important;
+    }
+    audio::-webkit-media-controls-play-button {
+        transform: scale(1.8) !important;
+        background-color: #FF5500 !important;
+        border-radius: 50% !important;
+        margin-right: 15px !important;
+    }
+    audio::-webkit-media-controls-mute-button {
+        transform: scale(1.4) !important;
+    }
+    audio::-webkit-media-controls-current-time-display,
+    audio::-webkit-media-controls-time-remaining-display {
+        font-size: 1.1rem !important;
+        color: #FF5500 !important;
+        font-weight: bold !important;
     }
     .sidebar-img-fixed {
         width: 100% !important;
@@ -146,11 +165,16 @@ st.markdown("""
             height: 250px !important;
         }
         .audio-player-wrapper {
-            padding: 10px 15px !important;
+            padding: 12px 15px !important;
+            border-radius: 35px !important;
         }
         .audio-player-wrapper audio {
-            transform: scale(1.0) !important;
-            height: 40px !important;
+            transform: scale(1.05) !important;
+            height: 50px !important;
+        }
+        audio::-webkit-media-controls-play-button {
+            transform: scale(1.6) !important;
+            margin-right: 10px !important;
         }
         h1 img {
             width: 30px !important;
@@ -167,6 +191,8 @@ if "review_file" not in st.session_state:
     st.session_state.review_file = "reviews.json"
 if "voted_reviews" not in st.session_state:
     st.session_state.voted_reviews = []
+if "auto_play" not in st.session_state:
+    st.session_state.auto_play = False
 
 def load_reviews():
     if os.path.exists(st.session_state.review_file):
@@ -225,11 +251,13 @@ if music_files:
         current_idx = music_files.index(st.session_state.track_selector)
         next_idx = (current_idx + 1) % len(music_files)
         st.session_state.track_selector = music_files[next_idx]
+        st.session_state.auto_play = True
 
     def prev_track():
         current_idx = music_files.index(st.session_state.track_selector)
         prev_idx = (current_idx - 1) % len(music_files)
         st.session_state.track_selector = music_files[prev_idx]
+        st.session_state.auto_play = True
 
 with st.sidebar:
     st.markdown("<h2 style='color:#FF5500 !important; font-weight:700; margin-top:0; letter-spacing:-1px;'>🎵 playlist</h2>", unsafe_allow_html=True)
@@ -339,10 +367,13 @@ if selected_music:
         st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}"></div>', unsafe_allow_html=True)
         
         st.markdown('<div class="audio-player-wrapper">', unsafe_allow_html=True)
-        st.audio(selected_music)
+        
+        should_autoplay = st.session_state.get("auto_play", False)
+        st.audio(selected_music, autoplay=should_autoplay)
+        st.session_state.auto_play = False
+        
         st.markdown('</div>', unsafe_allow_html=True)
         
-        st.write("")
         btn_c1, btn_c2 = st.columns(2)
         with btn_c1:
             st.button("◀ 이전 곡", on_click=prev_track, use_container_width=True, key="main_prev")
