@@ -91,8 +91,11 @@ st.markdown("""
         border-radius: 12px !important;
         border: 3px solid #00E676 !important;
         box-shadow: 0px 0px 25px rgba(0, 230, 118, 0.5) !important;
-        background-color: #000000 !important;
+        background-color: #121614 !important;
         margin-bottom: 20px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .album-art-frame img {
         width: 100% !important;
@@ -328,7 +331,10 @@ with st.sidebar:
 if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
     
-    profile_img_src = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100&q=80"
+    profile_svg = '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#00E676"/><text x="50%" y="50%" font-family="sans-serif" font-size="50" fill="#0A0A0C" text-anchor="middle" dominant-baseline="central">👤</text></svg>'
+    profile_b64 = base64.b64encode(profile_svg.encode('utf-8')).decode('utf-8')
+    profile_img_src = f"data:image/svg+xml;base64,{profile_b64}"
+    
     if os.path.exists("ㄸㄷ_2.jpg"):
         try:
             with open("ㄸㄷ_2.jpg", "rb") as img_file:
@@ -357,6 +363,10 @@ if selected_music:
         
         cover_files = [f for f in os.listdir('.') if f.lower().endswith(('.gif', '.png', '.jpg', '.jpeg', '.webp')) and f != "ㄸㄷ_2.jpg"]
         
+        fallback_svg = '<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#121614"/><text x="50%" y="50%" font-family="sans-serif" font-size="24" fill="#00E676" text-anchor="middle" dominant-baseline="middle">사진 폴더에 사진이나 GIF 움짤을 넣어주세요!</text></svg>'
+        fb_b64 = base64.b64encode(fallback_svg.encode('utf-8')).decode('utf-8')
+        assigned_cover = f"data:image/svg+xml;base64,{fb_b64}"
+        
         if cover_files:
             c_file = cover_files[current_index % len(cover_files)]
             try:
@@ -366,18 +376,7 @@ if selected_music:
                 c_mime = "gif" if c_ext == 'gif' else ("jpeg" if c_ext in ['jpg', 'jpeg'] else c_ext)
                 assigned_cover = f"data:image/{c_mime};base64,{c_b64}"
             except Exception:
-                assigned_cover = "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=600&q=80"
-        else:
-            backup_images = [
-                "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=600&q=80",
-                "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&q=80",
-                "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?w=600&q=80",
-                "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80",
-                "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80",
-                "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80",
-                "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80"
-            ]
-            assigned_cover = backup_images[current_index % len(backup_images)]
+                pass
             
         st.markdown(f'<div class="album-art-frame"><img src="{assigned_cover}"></div>', unsafe_allow_html=True)
         
