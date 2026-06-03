@@ -22,6 +22,8 @@ st.markdown("""
         letter-spacing: -1px;
         margin: 0 !important;
         text-shadow: 0px 0px 12px rgba(255, 85, 0, 0.6);
+        display: flex;
+        align-items: center;
     }
     h2, h3, h4 {
         color: #FFFFFF !important;
@@ -128,11 +130,43 @@ st.markdown("""
         height: 100% !important;
         object-fit: cover !important;
     }
+    
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.4rem !important;
+            letter-spacing: -0.5px;
+        }
+        .main-banner {
+            padding: 20px 15px !important;
+        }
+        .track-box {
+            padding: 15px !important;
+        }
+        .album-art-frame {
+            height: 250px !important;
+        }
+        .audio-player-wrapper {
+            padding: 10px 15px !important;
+        }
+        .audio-player-wrapper audio {
+            transform: scale(1.0) !important;
+            height: 40px !important;
+        }
+        h1 img {
+            width: 30px !important;
+            height: 30px !important;
+        }
+        [data-testid="stMetricValue"] {
+            font-size: 28px !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
 if "review_file" not in st.session_state:
     st.session_state.review_file = "reviews.json"
+if "voted_reviews" not in st.session_state:
+    st.session_state.voted_reviews = []
 
 def load_reviews():
     if os.path.exists(st.session_state.review_file):
@@ -213,7 +247,15 @@ with st.sidebar:
 
 if selected_music:
     st.markdown('<div class="main-banner">', unsafe_allow_html=True)
-    st.markdown("<h1>🎤 힙합꿈나무 송승현의 자작곡 평가하기 🎸</h1>", unsafe_allow_html=True)
+    
+    profile_img_src = "ㄸㄷ_2.jpg" if os.path.exists("ㄸㄷ_2.jpg") else "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100&q=80"
+    st.markdown(f"""
+    <h1>
+        <img src="{profile_img_src}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:12px; border:2px solid #FF5500; box-shadow: 0px 0px 8px rgba(255,85,0,0.5);">
+        🎤 힙합꿈나무 송승현의 자작곡 평가하기 🎸
+    </h1>
+    """, unsafe_allow_html=True)
+    
     st.markdown("<p style='color:#FF5500; margin:8px 0 0 0; font-size:16px; font-weight:600;'>🎹 BEAT LAB & SOUND STREAMING 🎶</p>", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
@@ -338,15 +380,19 @@ if selected_music:
             </div>
             """, unsafe_allow_html=True)
 
-            btn_col1, btn_col2, _ = st.columns([1, 1, 4])
+            has_voted = r['id'] in st.session_state.voted_reviews
+
+            btn_col1, btn_col2, _ = st.columns([1.5, 1.5, 3])
             with btn_col1:
-                if st.button(f"👍 추천 {r['upvotes']}", key=f"up_{r['id']}"):
+                if st.button(f"🟢 👍 추천 {r['upvotes']}", key=f"up_{r['id']}", disabled=has_voted):
                     r['upvotes'] += 1
+                    st.session_state.voted_reviews.append(r['id'])
                     save_reviews(current_reviews)
                     st.rerun()
             with btn_col2:
-                if st.button(f"👎 비추천 {r['downvotes']}", key=f"dn_{r['id']}"):
+                if st.button(f"🔴 👎 비추천 {r['downvotes']}", key=f"dn_{r['id']}", disabled=has_voted):
                     r['downvotes'] += 1
+                    st.session_state.voted_reviews.append(r['id'])
                     save_reviews(current_reviews)
                     st.rerun()
 
